@@ -27,19 +27,22 @@ namespace CRM.Application.Services
             return _mapper.Map<TEntityResultDTO>(entityResult);
         }
 
-        public virtual Task<IEnumerable<TEntityResultDTO>> AddRangeAsync(IEnumerable<TEntityDTO> dtos)
+        public virtual async Task<IEnumerable<TEntityResultDTO>> AddRangeAsync(IEnumerable<TEntityDTO> dtos)
         {
-            throw new NotImplementedException();
+            var entitiesMapped = _mapper.Map<IEnumerable<TEntity>>(dtos);
+
+            var entitiesResult = await _repository.AddRangeAsync(entitiesMapped);
+
+            return _mapper.Map<IEnumerable<TEntityResultDTO>>(entitiesResult);
         }
 
-        public virtual Task<IEnumerable<TEntityResultDTO>> FindAsync(Expression<Func<TEntityDTO, bool>> predicate)
+        public virtual async Task<IEnumerable<TEntityResultDTO>> FindAsync(Expression<Func<TEntityDTO, bool>> predicate)
         {
-            throw new NotImplementedException();
-        }
+            var predicateMapped = _mapper.Map<Expression<Func<TEntity, bool>>>(predicate);
 
-        public virtual Task<IEnumerable<TEntityResultDTO>> GetAllAsync()
-        {
-            throw new NotImplementedException();
+            var entities = await _repository.FindAsync(predicateMapped);
+
+            return _mapper.Map<IEnumerable<TEntityResultDTO>>(entities);
         }
 
         public virtual async Task<TEntityResultDTO?> GetByIdAsync(Guid id)

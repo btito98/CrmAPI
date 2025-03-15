@@ -1,12 +1,14 @@
-﻿using CRM.Application.DTOs.Cliente;
+﻿using CRM.API.Helpers;
+using CRM.Application.DTOs.Cliente;
 using CRM.Application.Exceptions;
 using CRM.Application.Interfaces;
+using CRM.Domain.Models.Cliente;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CRM.API.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/clientes")]
     public class ClienteController : ControllerBase
     {
         private readonly IClienteService _clienteService;
@@ -26,13 +28,32 @@ namespace CRM.API.Controllers
             {
                 var cliente = await _clienteService.GetByIdAsync(id);
 
-                if (cliente == null) return NotFound(new { details = "Cliente não encontrado" });
+                if (cliente == null) return NotFound(new ApiResponse(404, "Cliente não encontrado"));
 
                 return Ok(cliente);
             }
             catch (Exception ex)
             {
-                return BadRequest(new { details = ex.Message });
+                return BadRequest(new ApiResponse(400, ex.Message));
+            }
+        }
+
+        [ProducesResponseType(typeof(IEnumerable<ClienteResultDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [HttpGet]
+        public async Task<IActionResult> Get([FromQuery] ClienteFilterParams filterParams)
+        {
+            try
+            {
+                var (clientes, totalCount) = await _clienteService.GetFilteredAsync(filterParams);
+
+                Response.Headers.Append("X-Total-Count", totalCount.ToString());
+
+                return Ok(clientes);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ApiResponse(400, ex.Message));
             }
         }
 
@@ -49,7 +70,25 @@ namespace CRM.API.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { details = ex.Message });
+                return BadRequest(new ApiResponse(400, ex.Message));
+            }
+        }
+
+
+        [ProducesResponseType(typeof(IEnumerable<ClienteResultDTO>), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [HttpPost("createrange")]
+        public async Task<IActionResult> PostRange([FromBody] IEnumerable<ClienteCreateDTO> clientes)
+        {
+            try
+            {
+                var clientesCriados = await _clienteService.AddRangeAsync(clientes);
+
+                return CreatedAtAction(nameof(Get), null, clientesCriados);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ApiResponse(400, ex.Message));
             }
         }
 
@@ -70,11 +109,11 @@ namespace CRM.API.Controllers
             }
             catch (NotFoundException ex)
             {
-                return NotFound(new { details = ex.Message });
+                return NotFound(new ApiResponse(404, ex.Message));
             }
             catch (Exception ex)
             {
-                return BadRequest(new { details = ex.Message });
+                return BadRequest(new ApiResponse(400, ex.Message));
             }
         }
 
@@ -94,11 +133,11 @@ namespace CRM.API.Controllers
             }
             catch (NotFoundException ex)
             {
-                return BadRequest(new { details = ex.Message });
+                return NotFound(new ApiResponse(404, ex.Message));
             }
             catch (Exception ex)
             {
-                return BadRequest(new { details = ex.Message });
+                return BadRequest(new ApiResponse(400, ex.Message));
             }
         }
 

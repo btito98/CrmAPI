@@ -25,6 +25,7 @@ namespace CRM.Shared.IoC
             services.AddScoped<IClienteService, ClienteService>();
 
             services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
+            services.AddScoped<IClienteRepository, ClienteRepository>();
 
             services.AddSingleton(new MapperConfiguration(config => config.Configure()).CreateMapper());
         }
