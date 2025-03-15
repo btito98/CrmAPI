@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CRM.API.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/clientes")]
     public class ClienteController : ControllerBase
     {
         private readonly IClienteService _clienteService;
@@ -114,7 +114,7 @@ namespace CRM.API.Controllers
             }
             catch (NotFoundException ex)
             {
-                return BadRequest(new { details = ex.Message });
+                return NotFound(new { details = ex.Message });
             }
             catch (Exception ex)
             {
