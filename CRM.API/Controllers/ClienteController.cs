@@ -1,4 +1,5 @@
-﻿using CRM.Application.DTOs.Cliente;
+﻿using CRM.API.Helpers;
+using CRM.Application.DTOs.Cliente;
 using CRM.Application.Exceptions;
 using CRM.Application.Interfaces;
 using CRM.Domain.Models.Cliente;
@@ -27,13 +28,13 @@ namespace CRM.API.Controllers
             {
                 var cliente = await _clienteService.GetByIdAsync(id);
 
-                if (cliente == null) return NotFound(new { details = "Cliente não encontrado" });
+                if (cliente == null) return NotFound(new ApiResponse(404, "Cliente não encontrado"));
 
                 return Ok(cliente);
             }
             catch (Exception ex)
             {
-                return BadRequest(new { details = ex.Message });
+                return BadRequest(new ApiResponse(500, ex.Message));
             }
         }
 
@@ -52,7 +53,7 @@ namespace CRM.API.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { details = ex.Message });
+                return BadRequest(new ApiResponse(500, ex.Message));
             }
         }
 
@@ -69,7 +70,7 @@ namespace CRM.API.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { details = ex.Message });
+                return BadRequest(new ApiResponse(500, ex.Message));
             }
         }
 
@@ -90,11 +91,11 @@ namespace CRM.API.Controllers
             }
             catch (NotFoundException ex)
             {
-                return NotFound(new { details = ex.Message });
+                return NotFound(new ApiResponse(404, ex.Message));
             }
             catch (Exception ex)
             {
-                return BadRequest(new { details = ex.Message });
+                return BadRequest(new ApiResponse(500, ex.Message));
             }
         }
 
@@ -114,11 +115,11 @@ namespace CRM.API.Controllers
             }
             catch (NotFoundException ex)
             {
-                return NotFound(new { details = ex.Message });
+                return NotFound(new ApiResponse(404, ex.Message));
             }
             catch (Exception ex)
             {
-                return BadRequest(new { details = ex.Message });
+                return BadRequest(new ApiResponse(500, ex.Message));
             }
         }
 
