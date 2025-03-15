@@ -3,7 +3,7 @@
     public abstract class BaseEntity
     {
         public required Guid Id { get; set; } = Guid.NewGuid();
-        public string UsuarioCriacao { get; private set; }
+        public string UsuarioCriacao { get; set; }
         public DateTime DataCriacao { get; private set; } = DateTime.UtcNow;
         public string? UsuarioAlteracao { get; set; }
         public DateTime? DataAlteracao { get; set; }
