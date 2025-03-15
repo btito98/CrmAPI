@@ -1,4 +1,5 @@
 ﻿using CRM.Domain.Entities;
+using CRM.Domain.Models;
 using System.Linq.Expressions;
 
 namespace CRM.Infrastructure.Interfaces

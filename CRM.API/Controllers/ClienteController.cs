@@ -1,6 +1,7 @@
 ﻿using CRM.Application.DTOs.Cliente;
 using CRM.Application.Exceptions;
 using CRM.Application.Interfaces;
+using CRM.Domain.Models.Cliente;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CRM.API.Controllers
@@ -29,6 +30,23 @@ namespace CRM.API.Controllers
                 if (cliente == null) return NotFound(new { details = "Cliente não encontrado" });
 
                 return Ok(cliente);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { details = ex.Message });
+            }
+        }
+
+        [ProducesResponseType(typeof(IEnumerable<ClienteResultDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [HttpGet]
+        public async Task<IActionResult> Get([FromQuery] ClienteFilterParams filterParams)
+        {
+            try
+            {
+                var clientes = await _clienteService.GetFilteredAsync(filterParams);
+
+                return Ok(clientes);
             }
             catch (Exception ex)
             {
