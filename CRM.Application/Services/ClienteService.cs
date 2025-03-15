@@ -22,11 +22,13 @@ namespace CRM.Application.Services
             return await base.AddAsync(dto);
         }
 
-        public async Task<IEnumerable<ClienteResultDTO>> GetFilteredAsync(ClienteFilterParams filterParams)
+        public async Task<(IEnumerable<ClienteResultDTO> clientes, int totalCount)> GetFilteredAsync(ClienteFilterParams filterParams)
         {
-            var entities = await clienteRepository.GetFilteredAsync(filterParams);
+            var (entities, totalCount) = await clienteRepository.GetFilteredAsync(filterParams);
 
-            return _mapper.Map<IEnumerable<ClienteResultDTO>>(entities);
+            var clientes = _mapper.Map<IEnumerable<ClienteResultDTO>>(entities);
+
+            return (clientes, totalCount);
         }
     }
 }

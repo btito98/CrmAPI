@@ -6,6 +6,6 @@ namespace CRM.Application.Interfaces
 {
     public interface IClienteService : IBaseService<ClienteCreateDTO, Cliente, ClienteResultDTO>
     {
-        Task<IEnumerable<ClienteResultDTO>> GetFilteredAsync(ClienteFilterParams filterParams);
+        Task<(IEnumerable<ClienteResultDTO> clientes, int totalCount)> GetFilteredAsync(ClienteFilterParams filterParams);
     }
 }

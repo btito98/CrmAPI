@@ -12,11 +12,18 @@ namespace CRM.Infrastructure.Repositories
         {
         }
 
-        public async Task<IEnumerable<Cliente>> GetFilteredAsync(ClienteFilterParams filterParams)
+        public async Task<(IEnumerable<Cliente> clientes, int totalCount)> GetFilteredAsync(ClienteFilterParams filterParams)
         {
             IQueryable<Cliente> query = GetByFilterParameters(filterParams);
 
-            return await query.ToListAsync();
+            int totalCount = await query.CountAsync();
+
+            var clientes = await query
+                .Skip((filterParams.PageNumber - 1) * filterParams.PageSize)
+                .Take(filterParams.PageSize)
+                .ToListAsync();
+
+            return (clientes, totalCount);
         }
 
         private IQueryable<Cliente> GetByFilterParameters(ClienteFilterParams filterParams)
@@ -48,14 +55,14 @@ namespace CRM.Infrastructure.Repositories
 
             if (filterParams.DataCriacaoInicio.HasValue)
             {
-                DateTime startDate = filterParams.DataCriacaoInicio.Value.Date;
+                DateTime startDate = filterParams.DataCriacaoInicio.Value.Date.ToUniversalTime();
                 query = query.Where(x => x.DataCriacao >= startDate);
             }
 
             if (filterParams.DataCriacaoFim.HasValue)
             {
-                DateTime endDate = filterParams.DataCriacaoFim.Value.Date.AddDays(1);
-                query = query.Where(x => x.DataCriacao < endDate);
+                DateTime endDate = filterParams.DataCriacaoFim.Value.Date.AddDays(1).AddSeconds(-1).ToUniversalTime();
+                query = query.Where(x => x.DataCriacao <= endDate);
             }
 
             return query;

@@ -44,7 +44,9 @@ namespace CRM.API.Controllers
         {
             try
             {
-                var clientes = await _clienteService.GetFilteredAsync(filterParams);
+                var (clientes, totalCount) = await _clienteService.GetFilteredAsync(filterParams);
+
+                Response.Headers.Append("X-Total-Count", totalCount.ToString());
 
                 return Ok(clientes);
             }

@@ -8,5 +8,7 @@
         public bool? Ativo { get; init; }
         public DateTime? DataCriacaoInicio { get; init; }
         public DateTime? DataCriacaoFim { get; init; }
+        public int PageNumber { get; set; } = 1;
+        public int PageSize { get; set; } = 10; 
     }
 }
