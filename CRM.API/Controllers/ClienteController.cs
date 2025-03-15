@@ -34,7 +34,7 @@ namespace CRM.API.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new ApiResponse(500, ex.Message));
+                return BadRequest(new ApiResponse(400, ex.Message));
             }
         }
 
@@ -53,7 +53,7 @@ namespace CRM.API.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new ApiResponse(500, ex.Message));
+                return BadRequest(new ApiResponse(400, ex.Message));
             }
         }
 
@@ -70,7 +70,25 @@ namespace CRM.API.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new ApiResponse(500, ex.Message));
+                return BadRequest(new ApiResponse(400, ex.Message));
+            }
+        }
+
+
+        [ProducesResponseType(typeof(IEnumerable<ClienteResultDTO>), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [HttpPost("createrange")]
+        public async Task<IActionResult> PostRange([FromBody] IEnumerable<ClienteCreateDTO> clientes)
+        {
+            try
+            {
+                var clientesCriados = await _clienteService.AddRangeAsync(clientes);
+
+                return CreatedAtAction(nameof(Get), null, clientesCriados);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ApiResponse(400, ex.Message));
             }
         }
 
@@ -95,7 +113,7 @@ namespace CRM.API.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new ApiResponse(500, ex.Message));
+                return BadRequest(new ApiResponse(400, ex.Message));
             }
         }
 
@@ -119,7 +137,7 @@ namespace CRM.API.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new ApiResponse(500, ex.Message));
+                return BadRequest(new ApiResponse(400, ex.Message));
             }
         }
 

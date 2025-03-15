@@ -24,19 +24,16 @@ namespace CRM.Infrastructure.Repositories
             return entity;
         }
 
-        public Task<IEnumerable<TEntity>> AddRangeAsync(IEnumerable<TEntity> entities)
+        public async Task<IEnumerable<TEntity>> AddRangeAsync(IEnumerable<TEntity> entities)
         {
-            throw new NotImplementedException();
+            await _dbSet.AddRangeAsync(entities);
+            await _context.SaveChangesAsync();
+            return entities;
         }
 
-        public Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate)
+        public async Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate)
         {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<TEntity>> GetAllAsync()
-        {
-            throw new NotImplementedException();
+            return await _dbSet.Where(predicate).ToListAsync();
         }
 
         public async Task<TEntity?> GetByIdAsync(Guid id) => await _dbSet.FindAsync(id);
