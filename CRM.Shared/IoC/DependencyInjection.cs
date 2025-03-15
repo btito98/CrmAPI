@@ -1,5 +1,10 @@
-﻿using CRM.Application.Mappings;
+﻿using AutoMapper;
+using CRM.Application.Interfaces;
+using CRM.Application.Mappings;
+using CRM.Application.Services;
 using CRM.Infrastructure.Context;
+using CRM.Infrastructure.Interfaces;
+using CRM.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,7 +21,12 @@ namespace CRM.Shared.IoC
 
             services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
 
-            services.AddAutoMapper(typeof(DomainToDTOMappingProfile));
+            services.AddScoped(typeof(IBaseService<,,>), typeof(BaseService<,,>));
+            services.AddScoped<IClienteService, ClienteService>();
+
+            services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
+
+            services.AddSingleton(new MapperConfiguration(config => config.Configure()).CreateMapper());
         }
     }
 }
