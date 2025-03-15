@@ -64,6 +64,8 @@ namespace CRM.API.Controllers
         {
             try
             {
+                cliente.InitializeUserCreation(User.FindFirst("name")?.Value ?? "Não identificado");
+
                 var clienteCriado = await _clienteService.AddAsync(cliente);
 
                 return CreatedAtAction(nameof(GetById), new { id = clienteCriado.Id }, clienteCriado);
@@ -82,6 +84,8 @@ namespace CRM.API.Controllers
         {
             try
             {
+                clientes.ToList().ForEach(c => c.InitializeUserCreation(User.FindFirst("name")?.Value ?? "Não identificado"));
+
                 var clientesCriados = await _clienteService.AddRangeAsync(clientes);
 
                 return CreatedAtAction(nameof(Get), null, clientesCriados);
@@ -100,10 +104,9 @@ namespace CRM.API.Controllers
         {
             try
             {
-                string usuarioAlteracao = "Bruno Tits";
-                // TODO: Implementar captura do nome do usuario baseado no token
+                cliente.UpdateUser(User.FindFirst("name")?.Value ?? "Não identificado");
 
-                var clienteAtualizado = await _clienteService.UpdateAsync(id, cliente, usuarioAlteracao);
+                var clienteAtualizado = await _clienteService.UpdateAsync(id, cliente);
 
                 return Ok(clienteAtualizado);
             }
@@ -125,10 +128,10 @@ namespace CRM.API.Controllers
         {
             try
             {
-                string usuarioAlteracao = "Bruno Tits";
-                // TODO: Implementar captura do nome do usuario baseado no token
+                string usuarioAlteracao = User.FindFirst("name")?.Value ?? "Não identificado";
 
                 await _clienteService.RemoveAsync(id, usuarioAlteracao);
+
                 return Ok();
             }
             catch (NotFoundException ex)

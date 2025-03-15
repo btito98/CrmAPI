@@ -9,7 +9,7 @@ namespace CRM.Application.Interfaces
         Task<IEnumerable<TEntityResultDTO>> FindAsync(Expression<Func<TEntityDTO, bool>> predicate);
         Task<TEntityResultDTO> AddAsync(TEntityDTO dto);
         Task<IEnumerable<TEntityResultDTO>> AddRangeAsync(IEnumerable<TEntityDTO> dtos);
-        Task<TEntityResultDTO> UpdateAsync(Guid id, TEntityDTO entity, string usuarioAlteracao);
+        Task<TEntityResultDTO> UpdateAsync(Guid id, TEntityDTO entity);
         Task RemoveAsync(Guid id, string usuarioAlteracao);
     }
 }

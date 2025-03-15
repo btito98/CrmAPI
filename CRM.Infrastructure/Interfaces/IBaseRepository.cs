@@ -10,7 +10,7 @@ namespace CRM.Infrastructure.Interfaces
         Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate);
         Task<TEntity> AddAsync(TEntity entity);
         Task<IEnumerable<TEntity>> AddRangeAsync(IEnumerable<TEntity> entities);
-        Task<TEntity> UpdateAsync(TEntity entity, string usuarioAlteracao);
+        Task<TEntity> UpdateAsync(TEntity entity);
         Task RemoveAsync(TEntity entity, string usuarioAlteracao);
     }
 }

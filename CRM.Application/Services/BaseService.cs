@@ -61,7 +61,7 @@ namespace CRM.Application.Services
             await _repository.RemoveAsync(entity, usuarioAlteracao);
         }
 
-        public virtual async Task<TEntityResultDTO> UpdateAsync(Guid id, TEntityDTO dto, string usuarioAlteracao)
+        public virtual async Task<TEntityResultDTO> UpdateAsync(Guid id, TEntityDTO dto)
         {
             var entity = await _repository.GetByIdAsync(id);
 
@@ -69,7 +69,7 @@ namespace CRM.Application.Services
 
             var entityMapped = _mapper.Map(dto, entity);
 
-            var entityResult = await _repository.UpdateAsync(entityMapped, usuarioAlteracao);
+            var entityResult = await _repository.UpdateAsync(entityMapped);
 
             return _mapper.Map<TEntityResultDTO>(entityResult);
         }

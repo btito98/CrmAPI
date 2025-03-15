@@ -49,10 +49,8 @@ namespace CRM.Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<TEntity> UpdateAsync(TEntity entity, string usuarioAlteracao)
+        public async Task<TEntity> UpdateAsync(TEntity entity)
         {
-            if (entity is BaseEntity baseEntity) baseEntity.Update(usuarioAlteracao);
-
             _dbSet.Update(entity);
             await _context.SaveChangesAsync();
             return entity;
