@@ -25,7 +25,7 @@ namespace CRM.API.Controllers
         public async Task<IActionResult> GetById(Guid id)
         {
             try
-            {
+            { 
                 var cliente = await _clienteService.GetByIdAsync(id);
 
                 if (cliente == null) return NotFound(new ApiResponse(404, "Cliente não encontrado"));
