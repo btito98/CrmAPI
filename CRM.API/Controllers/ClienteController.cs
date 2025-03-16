@@ -5,10 +5,12 @@ using CRM.Application.Interfaces;
 using CRM.Application.Validators.Cliente;
 using CRM.Domain.Models.Cliente;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CRM.API.Controllers
 {
+
     [ApiController]
     [Route("api/clientes")]
     public class ClienteController : ControllerBase
@@ -25,6 +27,7 @@ namespace CRM.API.Controllers
         [ProducesResponseType(typeof(ClienteResultDTO), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Authorize(Policy = "ReadCliente")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
@@ -92,6 +95,7 @@ namespace CRM.API.Controllers
 
         [ProducesResponseType(typeof(IEnumerable<ClienteResultDTO>), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Authorize(Policy = "CreateCliente")]
         [HttpPost("createrange")]
         public async Task<IActionResult> PostRange([FromBody] IEnumerable<ClienteCreateDTO> clientes)
         {
