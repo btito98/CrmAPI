@@ -52,6 +52,11 @@ namespace CRM.API.Configurations
             {
                 policy.RequireResourceRoles("read_cliente");
             });
+
+            options.AddPolicy("CreateCliente", policy =>
+            {
+                policy.RequireResourceRoles("create_cliente");
+            });
         }
     }
 }

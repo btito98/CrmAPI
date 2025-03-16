@@ -95,6 +95,7 @@ namespace CRM.API.Controllers
 
         [ProducesResponseType(typeof(IEnumerable<ClienteResultDTO>), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Authorize(Policy = "CreateCliente")]
         [HttpPost("createrange")]
         public async Task<IActionResult> PostRange([FromBody] IEnumerable<ClienteCreateDTO> clientes)
         {
