@@ -18,6 +18,7 @@ Esta API permite gerenciar:
 - PostgreSQL
 - Swagger para documentação
 - Autenticação JWT
+- Keycloak para gerenciamento de autenticação e autorização
 
 ## Estrutura do Projeto
 
@@ -67,4 +68,15 @@ dotnet run
 ```
 
 A API estará disponível em `https://localhost:7243` e a documentação Swagger em `https://localhost:7243/swagger`.
+
+Autenticação e Autorização
+O sistema utiliza Keycloak como provedor de identidade e gerenciador de acesso:
+
+Gerenciamento de Usuários: Criação, atualização e desativação de usuários centralizados no Keycloak
+Controle de Acesso: Definição de roles e permissões por recurso
+Single Sign-On (SSO): Permite integração com outras aplicações da empresa
+Multi-tenancy: Suporte para separação de clientes em diferentes realms
+OAuth 2.0/OpenID Connect: Implementação de fluxos de autenticação padrão da indústria
+
+Para acessar endpoints protegidos, é necessário obter um token de acesso do Keycloak e incluí-lo no cabeçalho de autorização das requisições.
 
