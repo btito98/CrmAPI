@@ -10,6 +10,8 @@ namespace CRM.Application.DTOs
         [JsonIgnore]
         public string? UsuarioAlteracao { get; private set; }
         [JsonIgnore]
+        public DateTime DataAlteracao { get; private set; }
+        [JsonIgnore]
         public bool Ativo { get; init; } = true;
 
         public void InitializeUserCreation(string usuarioCriacao)
@@ -20,12 +22,14 @@ namespace CRM.Application.DTOs
             UsuarioCriacao = usuarioCriacao;
         }
 
-        public void UpdateUser(string usuarioAlteracao)
+        public void UpdateDTO(string usuarioAlteracao)
         {
             if (string.IsNullOrWhiteSpace(usuarioAlteracao))
                 throw new ArgumentNullException(nameof(usuarioAlteracao), "O usuário de alteração é obrigatório.");
 
+
             UsuarioAlteracao = usuarioAlteracao;
+            DataAlteracao = DateTime.UtcNow;
         }
     }
 }

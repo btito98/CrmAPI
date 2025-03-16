@@ -31,27 +31,25 @@ namespace CRM.Infrastructure.Repositories
             return entities;
         }
 
-        public async Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate)
+        public IQueryable<TEntity> Find(Expression<Func<TEntity, bool>> predicate)
         {
-            return await _dbSet.Where(predicate).ToListAsync();
+            return _dbSet
+                .AsNoTracking()
+                .Where(predicate);
         }
 
         public async Task<TEntity?> GetByIdAsync(Guid id) => await _dbSet.FindAsync(id);
 
-        public async Task RemoveAsync(TEntity entity, string usuarioAlteracao)
+        public async Task RemoveAsync(TEntity entity)
         {
-            if (entity is BaseEntity baseEntity)
-            {
-                baseEntity.Update(usuarioAlteracao);
-                baseEntity.Deactivate();
-            }
             _dbSet.Update(entity);
             await _context.SaveChangesAsync();
         }
 
         public async Task<TEntity> UpdateAsync(TEntity entity)
         {
-            _dbSet.Update(entity);
+            _dbSet.Attach(entity);
+            _context.Entry(entity).State = EntityState.Modified;
             await _context.SaveChangesAsync();
             return entity;
         }

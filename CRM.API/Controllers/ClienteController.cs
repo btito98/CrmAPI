@@ -2,7 +2,6 @@
 using CRM.Application.DTOs.Cliente;
 using CRM.Application.Exceptions;
 using CRM.Application.Interfaces;
-using CRM.Application.Validators.Cliente;
 using CRM.Domain.Models.Cliente;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
@@ -35,13 +34,13 @@ namespace CRM.API.Controllers
             {
                 var cliente = await _clienteService.GetByIdAsync(id);
 
-                if (cliente == null) return NotFound(new ApiResponse(404, "Cliente não encontrado"));
+                if (cliente == null) return NotFound(new ErroResponse(404, "Cliente não encontrado"));
 
                 return Ok(cliente);
             }
             catch (Exception ex)
             {
-                return BadRequest(new ApiResponse(400, ex.Message));
+                return BadRequest(new ErroResponse(400, ex.Message));
             }
         }
 
@@ -60,7 +59,7 @@ namespace CRM.API.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new ApiResponse(400, ex.Message));
+                return BadRequest(new ErroResponse(400, ex.Message));
             }
         }
 
@@ -77,7 +76,7 @@ namespace CRM.API.Controllers
                 {
                     var errorMessages = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
 
-                    return BadRequest(new ApiResponse(400, errors: errorMessages));
+                    return BadRequest(new ErroResponse(400, errors: errorMessages));
                 }
 
                 cliente.InitializeUserCreation(User.FindFirst("name")?.Value ?? "Não identificado");
@@ -88,10 +87,9 @@ namespace CRM.API.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new ApiResponse(400, ex.Message));
+                return BadRequest(new ErroResponse(400, ex.Message));
             }
         }
-
 
         [ProducesResponseType(typeof(IEnumerable<ClienteResultDTO>), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -109,7 +107,7 @@ namespace CRM.API.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new ApiResponse(400, ex.Message));
+                return BadRequest(new ErroResponse(400, ex.Message));
             }
         }
 
@@ -121,7 +119,7 @@ namespace CRM.API.Controllers
         {
             try
             {
-                cliente.UpdateUser(User.FindFirst("name")?.Value ?? "Não identificado");
+                cliente.UpdateDTO(User.FindFirst("name")?.Value ?? "Não identificado");
 
                 var clienteAtualizado = await _clienteService.UpdateAsync(id, cliente);
 
@@ -129,11 +127,11 @@ namespace CRM.API.Controllers
             }
             catch (NotFoundException ex)
             {
-                return NotFound(new ApiResponse(404, ex.Message));
+                return NotFound(new ErroResponse(404, ex.Message));
             }
             catch (Exception ex)
             {
-                return BadRequest(new ApiResponse(400, ex.Message));
+                return BadRequest(new ErroResponse(400, ex.Message));
             }
         }
 
@@ -153,13 +151,12 @@ namespace CRM.API.Controllers
             }
             catch (NotFoundException ex)
             {
-                return NotFound(new ApiResponse(404, ex.Message));
+                return NotFound(new ErroResponse(404, ex.Message));
             }
             catch (Exception ex)
             {
-                return BadRequest(new ApiResponse(400, ex.Message));
+                return BadRequest(new ErroResponse(400, ex.Message));
             }
         }
-
     }
 }
