@@ -10,11 +10,14 @@ namespace CRM.Application.Services
     public class BaseService<TEntityDTO, TEntity, TEntityResultDTO> :
         IBaseService<TEntityDTO, TEntity, TEntityResultDTO> where TEntity : BaseEntity
     {
+        protected readonly IUnitOfWork _unitOfWork;
         protected readonly IBaseRepository<TEntity> _repository;
         protected readonly IMapper _mapper;
-        public BaseService(IBaseRepository<TEntity> repository, IMapper mapper)
+
+        public BaseService(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+            _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+            _repository = unitOfWork.GetRepository<TEntity>();
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
@@ -22,56 +25,104 @@ namespace CRM.Application.Services
         {
             var entityMapped = _mapper.Map<TEntity>(dto);
 
-            var entityResult = await _repository.AddAsync(entityMapped);
+            await _unitOfWork.BeginTransactionAsync();
 
-            return _mapper.Map<TEntityResultDTO>(entityResult);
+            try
+            {
+                var entityResult = await _repository.AddAsync(entityMapped);
+                await _unitOfWork.CommitAsync();
+                return _mapper.Map<TEntityResultDTO>(entityResult);
+            }
+            catch
+            {
+                await _unitOfWork.RollbackAsync();
+                throw;
+            }
         }
 
         public virtual async Task<IEnumerable<TEntityResultDTO>> AddRangeAsync(IEnumerable<TEntityDTO> dtos)
         {
             var entitiesMapped = _mapper.Map<IEnumerable<TEntity>>(dtos);
 
-            var entitiesResult = await _repository.AddRangeAsync(entitiesMapped);
-
-            return _mapper.Map<IEnumerable<TEntityResultDTO>>(entitiesResult);
+            await _unitOfWork.BeginTransactionAsync();
+            try
+            {
+                var entitiesResult = await _repository.AddRangeAsync(entitiesMapped);
+                await _unitOfWork.CommitAsync();
+                return _mapper.Map<IEnumerable<TEntityResultDTO>>(entitiesResult);
+            }
+            catch
+            {
+                await _unitOfWork.RollbackAsync();
+                throw;
+            }
         }
 
         public virtual async Task<IEnumerable<TEntityResultDTO>> FindAsync(Expression<Func<TEntityDTO, bool>> predicate)
         {
             var predicateMapped = _mapper.Map<Expression<Func<TEntity, bool>>>(predicate);
 
-            var entities = await _repository.FindAsync(predicateMapped);
+            var entities = _repository.Find(predicateMapped);
 
             return _mapper.Map<IEnumerable<TEntityResultDTO>>(entities);
         }
 
+
         public virtual async Task<TEntityResultDTO?> GetByIdAsync(Guid id)
         {
             var entity = await _repository.GetByIdAsync(id);
-
+            if (entity == null) throw new NotFoundException($"{typeof(TEntity).Name} com ID {id} não foi encontrado.");
             return _mapper.Map<TEntityResultDTO>(entity);
         }
 
         public virtual async Task RemoveAsync(Guid id, string usuarioAlteracao)
         {
+            if (string.IsNullOrWhiteSpace(usuarioAlteracao))
+                throw new ArgumentException("Usuário de alteração não pode ser nulo ou vazio.", nameof(usuarioAlteracao));
+
             var entity = await _repository.GetByIdAsync(id);
+            if (entity == null)
+                throw new NotFoundException($"{typeof(TEntity).Name} com ID {id} não foi encontrado.");
 
-            if (entity == null) throw new NotFoundException("Entity not found");
+            if (entity is BaseEntity baseEntity)
+            {
+                baseEntity.Update(usuarioAlteracao);
+                baseEntity.Deactivate();
+            }
 
-            await _repository.RemoveAsync(entity, usuarioAlteracao);
+            await _unitOfWork.BeginTransactionAsync();
+
+            try
+            {
+                await _repository.RemoveAsync(entity); 
+                await _unitOfWork.CommitAsync();
+            }
+            catch
+            {
+                await _unitOfWork.RollbackAsync();
+                throw;
+            }
         }
 
         public virtual async Task<TEntityResultDTO> UpdateAsync(Guid id, TEntityDTO dto)
         {
             var entity = await _repository.GetByIdAsync(id);
-
-            if (entity == null) throw new NotFoundException("Entity not found");
+            if (entity == null) throw new NotFoundException($"{typeof(TEntity).Name} com ID {id} não foi encontrado.");
 
             var entityMapped = _mapper.Map(dto, entity);
 
-            var entityResult = await _repository.UpdateAsync(entityMapped);
-
-            return _mapper.Map<TEntityResultDTO>(entityResult);
+            await _unitOfWork.BeginTransactionAsync();
+            try
+            {
+                var entityResult = await _repository.UpdateAsync(entityMapped);
+                await _unitOfWork.CommitAsync();
+                return _mapper.Map<TEntityResultDTO>(entityResult);
+            }
+            catch
+            {
+                await _unitOfWork.RollbackAsync();
+                throw;
+            }
         }
     }
 }

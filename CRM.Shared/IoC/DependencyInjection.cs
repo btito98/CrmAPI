@@ -32,6 +32,7 @@ namespace CRM.Shared.IoC
             services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
             services.AddScoped<IClienteRepository, ClienteRepository>();
             services.AddScoped<IKeycloackRepository, KeycloackRepository>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             services.AddScoped<AppConfiguration>((s) =>
             {
