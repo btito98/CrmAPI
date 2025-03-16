@@ -1,0 +1,53 @@
+﻿{
+  "Routes": [
+    {
+      "DownstreamPathTemplate": "/realms/CRM-API/protocol/openid-connect/token",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/identity/token",
+      "UpstreamHttpMethod": [ "Post" ],
+      "DelegatingHandlers": [ "TokenHandler" ],
+      "DangerousAcceptAnyServerCertificateValidator": true,
+      "AddHeadersToRequest": {
+        "Access-Control-Allow-Origin": "*"
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/realms/CRM-API/protocol/openid-connect/token/introspect",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/identity/introspect",
+      "UpstreamHttpMethod": [ "Post" ]
+    },
+    {
+      "DownstreamPathTemplate": "/realms/CRM-API/protocol/openid-connect/userinfo",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/identity/userinfo",
+      "UpstreamHttpMethod": [ "Get" ]
+    }
+  ],
+  "GlobalConfiguration": {
+    "CorsPolicy": {
+      "IsEnabled": true,
+      "AllowAnyOrigin": true,
+      "AllowAnyMethod": true,
+      "AllowAnyHeader": true
+    }
+  }
+}
