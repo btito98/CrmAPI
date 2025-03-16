@@ -119,7 +119,7 @@ namespace CRM.API.Controllers
         {
             try
             {
-                cliente.UpdateUser(User.FindFirst("name")?.Value ?? "Não identificado");
+                cliente.UpdateDTO(User.FindFirst("name")?.Value ?? "Não identificado");
 
                 var clienteAtualizado = await _clienteService.UpdateAsync(id, cliente);
 
