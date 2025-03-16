@@ -4,9 +4,11 @@ using CRM.Application.Interfaces;
 using CRM.Application.Mappings;
 using CRM.Application.Services;
 using CRM.Application.Validators.Cliente;
+using CRM.Domain;
 using CRM.Infrastructure.Context;
 using CRM.Infrastructure.Interfaces;
 using CRM.Infrastructure.Repositories;
+using CRM.Infrastructure.RepositoriesExternal;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -29,6 +31,16 @@ namespace CRM.Shared.IoC
 
             services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
             services.AddScoped<IClienteRepository, ClienteRepository>();
+            services.AddScoped<IKeycloackRepository, KeycloackRepository>();
+
+            services.AddScoped<AppConfiguration>((s) =>
+            {
+                return new AppConfiguration(
+                    realm: configuration.GetSection("Keycloak").GetSection("realm").Value,
+                    authServerUrl: configuration.GetSection("Keycloak").GetSection("auth-server-url").Value,
+                    resource: configuration.GetSection("Keycloak").GetSection("resource").Value,
+                    credentialSecret: configuration.GetSection("Keycloak").GetSection("credentials").GetSection("secret").Value);
+            });
 
             services.AddScoped<IValidator<ClienteCreateDTO>, ClienteCreateDTOValidator>();
 
