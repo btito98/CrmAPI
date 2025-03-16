@@ -1,10 +1,13 @@
 ﻿using AutoMapper;
+using CRM.Application.DTOs.Cliente;
 using CRM.Application.Interfaces;
 using CRM.Application.Mappings;
 using CRM.Application.Services;
+using CRM.Application.Validators.Cliente;
 using CRM.Infrastructure.Context;
 using CRM.Infrastructure.Interfaces;
 using CRM.Infrastructure.Repositories;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,6 +29,8 @@ namespace CRM.Shared.IoC
 
             services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
             services.AddScoped<IClienteRepository, ClienteRepository>();
+
+            services.AddScoped<IValidator<ClienteCreateDTO>, ClienteCreateDTOValidator>();
 
             services.AddSingleton(new MapperConfiguration(config => config.Configure()).CreateMapper());
         }
