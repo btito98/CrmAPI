@@ -2,7 +2,9 @@
 using CRM.Application.DTOs.Cliente;
 using CRM.Application.Exceptions;
 using CRM.Application.Interfaces;
+using CRM.Application.Validators.Cliente;
 using CRM.Domain.Models.Cliente;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CRM.API.Controllers
@@ -12,10 +14,12 @@ namespace CRM.API.Controllers
     public class ClienteController : ControllerBase
     {
         private readonly IClienteService _clienteService;
+        private readonly IValidator<ClienteCreateDTO> _clienteCreateValidator;
 
-        public ClienteController(IClienteService clienteService)
+        public ClienteController(IClienteService clienteService, IValidator<ClienteCreateDTO> clienteCreateValidator)
         {
             _clienteService = clienteService;
+            _clienteCreateValidator = clienteCreateValidator;
         }
 
         [ProducesResponseType(typeof(ClienteResultDTO), StatusCodes.Status200OK)]
@@ -64,6 +68,15 @@ namespace CRM.API.Controllers
         {
             try
             {
+                var validationResult = await _clienteCreateValidator.ValidateAsync(cliente);
+
+                if (!validationResult.IsValid)
+                {
+                    var errorMessages = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
+
+                    return BadRequest(new ApiResponse(400, errors: errorMessages));
+                }
+
                 cliente.InitializeUserCreation(User.FindFirst("name")?.Value ?? "Não identificado");
 
                 var clienteCriado = await _clienteService.AddAsync(cliente);
