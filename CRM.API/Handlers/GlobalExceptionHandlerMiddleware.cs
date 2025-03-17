@@ -72,7 +72,6 @@ namespace CRM.API.Handlers
         }
     }
 
-    // Classe de extensão para facilitar o registro do middleware
     public static class GlobalExceptionHandlerMiddlewareExtensions
     {
         public static IApplicationBuilder UseGlobalExceptionHandler(this IApplicationBuilder builder)
