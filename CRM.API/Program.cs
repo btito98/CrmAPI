@@ -22,8 +22,8 @@ AuthorizationConfig.AddAuthentication(builder.Configuration, services);
 AuthorizationConfig.AddAuthorization(builder.Configuration, services);
 AuthorizationConfig.AddAdmin(builder.Configuration, services);
 
-
 builder.Configuration.AddJsonFile("ocelot.json", optional: false, reloadOnChange: true);
+builder.Host.ConfigureLogging();
 
 builder.Services.AddScoped<TokenHandler>();
 

@@ -16,11 +16,16 @@ namespace CRM.API.Controllers
     {
         private readonly IClienteService _clienteService;
         private readonly IValidator<ClienteCreateDTO> _clienteCreateValidator;
+        private readonly ILogger<ClienteController> _logger;
 
-        public ClienteController(IClienteService clienteService, IValidator<ClienteCreateDTO> clienteCreateValidator)
+        public ClienteController(
+            IClienteService clienteService,
+            IValidator<ClienteCreateDTO> clienteCreateValidator,
+            ILogger<ClienteController> logger)
         {
             _clienteService = clienteService;
             _clienteCreateValidator = clienteCreateValidator;
+            _logger = logger;
         }
 
         [ProducesResponseType(typeof(ClienteResultDTO), StatusCodes.Status200OK)]
@@ -40,6 +45,7 @@ namespace CRM.API.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Erro ao buscar cliente por id {id}", id);
                 return BadRequest(new ErroResponse(400, ex.Message));
             }
         }
@@ -59,6 +65,7 @@ namespace CRM.API.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Erro ao buscar clientes");
                 return BadRequest(new ErroResponse(400, ex.Message));
             }
         }
@@ -75,7 +82,7 @@ namespace CRM.API.Controllers
                 if (!validationResult.IsValid)
                 {
                     var errorMessages = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
-
+                    _logger.LogWarning("Erro de validação ao criar cliente {@ClienteRequest} {@ValidationErrors}", cliente, errorMessages);
                     return BadRequest(new ErroResponse(400, errors: errorMessages));
                 }
 
@@ -87,6 +94,7 @@ namespace CRM.API.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Erro ao criar cliente {@ClienteRequest}", cliente);
                 return BadRequest(new ErroResponse(400, ex.Message));
             }
         }
@@ -107,6 +115,7 @@ namespace CRM.API.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Erro ao criar clientes {@ClientesRequest}", clientes);
                 return BadRequest(new ErroResponse(400, ex.Message));
             }
         }
@@ -127,10 +136,12 @@ namespace CRM.API.Controllers
             }
             catch (NotFoundException ex)
             {
+                _logger.LogWarning(ex, "Cliente não encontrado para atualizar por id {id}", id);
                 return NotFound(new ErroResponse(404, ex.Message));
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Erro ao atualizar cliente {@ClienteRequest}", cliente);
                 return BadRequest(new ErroResponse(400, ex.Message));
             }
         }
@@ -151,10 +162,12 @@ namespace CRM.API.Controllers
             }
             catch (NotFoundException ex)
             {
+                _logger.LogWarning(ex, "Cliente não encontrado para deletar por id {id}", id);
                 return NotFound(new ErroResponse(404, ex.Message));
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Erro ao deletar cliente por id {id}", id);
                 return BadRequest(new ErroResponse(400, ex.Message));
             }
         }
