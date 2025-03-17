@@ -6,6 +6,7 @@
         public string Message { get; set; }
         public object Errors { get; set; }
 
+        public ErroResponse() {}
         public ErroResponse(int statusCode, string message = null, object errors = null)
         {
             StatusCode = statusCode;

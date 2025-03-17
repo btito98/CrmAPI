@@ -71,7 +71,6 @@ namespace CRM.Application.Services
         public virtual async Task<TEntityResultDTO?> GetByIdAsync(Guid id)
         {
             var entity = await _repository.GetByIdAsync(id);
-            if (entity == null) throw new NotFoundException($"{typeof(TEntity).Name} com ID {id} não foi encontrado.");
             return _mapper.Map<TEntityResultDTO>(entity);
         }
 
