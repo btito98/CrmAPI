@@ -14,24 +14,12 @@ namespace CRM.Infrastructure.Repositories
 
         public async Task<(IEnumerable<Cliente> clientes, int totalCount)> GetFilteredAsync(ClienteFilterParams filterParams)
         {
-            IQueryable<Cliente> query = GetByFilterParameters(filterParams);
-
-            int totalCount = await query.CountAsync();
-
-            var clientes = await query
-                .Skip((filterParams.PageNumber - 1) * filterParams.PageSize)
-                .Take(filterParams.PageSize)
-                .ToListAsync();
-
-            return (clientes, totalCount);
+            return await GetFilteredAsync(filterParams, GetByFilterParameters);
         }
 
-        private IQueryable<Cliente> GetByFilterParameters(ClienteFilterParams filterParams)
+        private IQueryable<Cliente> GetByFilterParameters(IQueryable<Cliente> query, ClienteFilterParams filterParams)
         {
-            IQueryable<Cliente> query = _context
-                .Clientes
-                .AsNoTracking()
-                .OrderByDescending(c => c.DataCriacao);
+            query = query.OrderByDescending(c => c.DataCriacao);
 
             if (!string.IsNullOrEmpty(filterParams.Nome))
             {
