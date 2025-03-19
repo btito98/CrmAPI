@@ -29,6 +29,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CRM.Application\CRM.Application.csproj" />
+    <ProjectReference Include="..\CRM.IoC\CRM.IoC.csproj" />
     <ProjectReference Include="..\CRM.Shared\CRM.Shared.csproj" />
   </ItemGroup>
 

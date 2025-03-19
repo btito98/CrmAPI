@@ -13,11 +13,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CRM.Application\CRM.Application.csproj" />
-    <ProjectReference Include="..\CRM.Infrastructure\CRM.Infrastructure.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="Utils\" />
   </ItemGroup>
 

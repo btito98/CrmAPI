@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CRM.Domain\CRM.Domain.csproj" />
+    <ProjectReference Include="..\CRM.Shared\CRM.Shared.csproj" />
   </ItemGroup>
 
 </Project>
