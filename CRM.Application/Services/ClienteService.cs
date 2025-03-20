@@ -4,25 +4,30 @@ using CRM.Application.Interfaces;
 using CRM.Domain.Entities;
 using CRM.Domain.Models.Cliente;
 using CRM.Infrastructure.Interfaces;
+using CRM.Shared.Results;
 
 namespace CRM.Application.Services
 {
     public class ClienteService : BaseService<ClienteCreateDTO, Cliente, ClienteResultDTO>, IClienteService
     {
-        protected readonly IClienteRepository _repository;
+        protected readonly IClienteRepository _clienteRepository;
         public ClienteService(IClienteRepository repository, IMapper mapper, IUnitOfWork unitOfWork) : base(unitOfWork, mapper)
         {
-            _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+            _clienteRepository = repository ?? throw new ArgumentNullException(nameof(repository));
         }
 
-        public async Task<(IEnumerable<ClienteResultDTO> clientes, int totalCount)> GetFilteredAsync(ClienteFilterParams filterParams)
+        public async Task<Result<(IEnumerable<ClienteResultDTO> clientes, int totalCount)>> GetFilteredAsync(ClienteFilterParams filterParams)
         {
-            var (entities, totalCount) = await _repository.GetFilteredAsync(filterParams);
+            var (entities, totalCount) = await _clienteRepository.GetFilteredAsync(filterParams);
 
-            var clientes = _mapper.Map<IEnumerable<ClienteResultDTO>>(entities);
+            if (!entities.Any())
+                return Result<(IEnumerable<ClienteResultDTO>, int)>.Failure(
+                    new Error("ClienteService.GetFilteredAsync", "Nenhum cliente encontrado com os filtros informados.")
+                );
 
-            return (clientes, totalCount);
-        }         
-
+            return Result<(IEnumerable<ClienteResultDTO>, int)>.Success(
+                (_mapper.Map<IEnumerable<ClienteResultDTO>>(entities), totalCount)
+            );
+        }
     }
 }

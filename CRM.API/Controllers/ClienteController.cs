@@ -1,5 +1,4 @@
 ﻿using CRM.Application.DTOs.Cliente;
-using CRM.Application.Exceptions;
 using CRM.Application.Interfaces;
 using CRM.Domain.Models.Cliente;
 using FluentValidation;
@@ -34,12 +33,12 @@ namespace CRM.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
-            var cliente = await _clienteService.GetByIdAsync(id);
+            var result = await _clienteService.GetByIdAsync(id);
 
-            if (cliente == null)
-                throw new NotFoundException($"Cliente com ID {id} não encontrado");
+            if (result.IsSuccess)
+                return Ok(result.Value);
 
-            return Ok(cliente);
+            return NotFound(new { error = result.Error?.Description });
         }
 
         [ProducesResponseType(typeof(IEnumerable<ClienteResultDTO>), StatusCodes.Status200OK)]
@@ -47,11 +46,15 @@ namespace CRM.API.Controllers
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery] ClienteFilterParams filterParams)
         {
-            var (clientes, totalCount) = await _clienteService.GetFilteredAsync(filterParams);
+            var result = await _clienteService.GetFilteredAsync(filterParams);
 
-            Response.Headers.Append("X-Total-Count", totalCount.ToString());
+            if (result.IsSuccess)
+            {
+                Response.Headers.Append("X-Total-Count", result.Value.totalCount.ToString());
+                return Ok(result.Value.clientes);
+            }
 
-            return Ok(clientes);
+            return BadRequest(new { error = result.Error?.Description });
         }
 
         [ProducesResponseType(typeof(ClienteResultDTO), StatusCodes.Status201Created)]
@@ -65,14 +68,17 @@ namespace CRM.API.Controllers
             {
                 var errorMessages = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
                 _logger.LogWarning("Erro de validação ao criar cliente {@ClienteRequest} {@ValidationErrors}", cliente, errorMessages);
-                throw new ValidationException(errorMessages);
+                return BadRequest(new { errors = errorMessages });
             }
 
-            cliente.InitializeUserCreation(User.FindFirst("name")?.Value ?? "Não identificado");
+            cliente.InitializeUserCreation(GetUserName());
 
-            var clienteCriado = await _clienteService.AddAsync(cliente);
+            var result = await _clienteService.AddAsync(cliente);
 
-            return CreatedAtAction(nameof(GetById), new { id = clienteCriado.Id }, clienteCriado);
+            if (result.IsSuccess)
+                return CreatedAtAction(nameof(GetById), new { id = result.Value.Id }, result.Value);
+
+            return BadRequest(new { error = result.Error?.Description });
         }
 
         [ProducesResponseType(typeof(IEnumerable<ClienteResultDTO>), StatusCodes.Status201Created)]
@@ -92,7 +98,7 @@ namespace CRM.API.Controllers
                 }
             }
 
-            clientes.ToList().ForEach(c => c.InitializeUserCreation(User.FindFirst("name")?.Value ?? "Não identificado"));
+            clientes.ToList().ForEach(c => c.InitializeUserCreation(GetUserName()));
 
             var clientesCriados = await _clienteService.AddRangeAsync(clientes);
 
@@ -100,7 +106,6 @@ namespace CRM.API.Controllers
         }
 
         [ProducesResponseType(typeof(ClienteResultDTO), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(Guid id, [FromBody] ClienteCreateDTO cliente)
@@ -110,27 +115,35 @@ namespace CRM.API.Controllers
             {
                 var errorMessages = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
                 _logger.LogWarning("Erro de validação ao atualizar cliente {@ClienteRequest} {@ValidationErrors}", cliente, errorMessages);
-                throw new ValidationException(errorMessages);
+                return BadRequest(new { errors = errorMessages });
             }
 
-            cliente.UpdateDTO(User.FindFirst("name")?.Value ?? "Não identificado");
+            cliente.UpdateDTO(GetUserName());
 
-            var clienteAtualizado = await _clienteService.UpdateAsync(id, cliente);
+            var result = await _clienteService.UpdateAsync(id, cliente);
 
-            return Ok(clienteAtualizado);
+            if (result.IsSuccess)
+                return Ok(result.Value);
+
+            return BadRequest(new { error = result.Error?.Description });
         }
 
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            string usuarioAlteracao = User.FindFirst("name")?.Value ?? "Não identificado";
+            string usuarioAlteracao = GetUserName();
 
-            await _clienteService.RemoveAsync(id, usuarioAlteracao);
+            var result = await _clienteService.RemoveAsync(id, usuarioAlteracao);
 
-            return Ok();
+            if (result.IsSuccess)
+                return NoContent();
+
+            return BadRequest(new { error = result.Error?.Description });
         }
+
+        private string GetUserName() => User.FindFirst("name")?.Value ?? "Não identificado";
+
     }
 }
