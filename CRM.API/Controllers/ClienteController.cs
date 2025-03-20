@@ -1,5 +1,4 @@
 ﻿using CRM.Application.DTOs.Cliente;
-using CRM.Application.Exceptions;
 using CRM.Application.Interfaces;
 using CRM.Domain.Models.Cliente;
 using FluentValidation;
@@ -107,7 +106,6 @@ namespace CRM.API.Controllers
         }
 
         [ProducesResponseType(typeof(ClienteResultDTO), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(Guid id, [FromBody] ClienteCreateDTO cliente)
@@ -130,8 +128,7 @@ namespace CRM.API.Controllers
             return BadRequest(new { error = result.Error?.Description });
         }
 
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
