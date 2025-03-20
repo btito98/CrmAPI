@@ -18,11 +18,6 @@ namespace CRM.Application.Services
 
         public async Task<Result<(IEnumerable<ClienteResultDTO> clientes, int totalCount)>> GetFilteredAsync(ClienteFilterParams filterParams)
         {
-            if (filterParams == null)
-                return Result<(IEnumerable<ClienteResultDTO>, int)>.Failure(
-                    new Error("ClienteService.GetFilteredAsync", "Parâmetros de filtro inválidos.")
-                );
-
             var (entities, totalCount) = await _clienteRepository.GetFilteredAsync(filterParams);
 
             if (!entities.Any())
