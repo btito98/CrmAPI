@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CRM.Shared.Results
+﻿namespace CRM.Shared.Results
 {
     public record Error(string Code, string Description)
     {
