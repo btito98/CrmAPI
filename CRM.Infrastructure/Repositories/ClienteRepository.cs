@@ -2,7 +2,6 @@
 using CRM.Domain.Models.Cliente;
 using CRM.Infrastructure.Context;
 using CRM.Infrastructure.Interfaces;
-using Microsoft.EntityFrameworkCore;
 
 namespace CRM.Infrastructure.Repositories
 {

@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using CRM.Application.Exceptions;
 using CRM.Application.Interfaces;
 using CRM.Domain.Entities;
 using CRM.Infrastructure.Interfaces;
