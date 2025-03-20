@@ -71,7 +71,7 @@ namespace CRM.API.Controllers
                 return BadRequest(new { errors = errorMessages });
             }
 
-            cliente.InitializeUserCreation(User.FindFirst("name")?.Value ?? "Não identificado");
+            cliente.InitializeUserCreation(GetUserName());
 
             var result = await _clienteService.AddAsync(cliente);
 
@@ -98,7 +98,7 @@ namespace CRM.API.Controllers
                 }
             }
 
-            clientes.ToList().ForEach(c => c.InitializeUserCreation(User.FindFirst("name")?.Value ?? "Não identificado"));
+            clientes.ToList().ForEach(c => c.InitializeUserCreation(GetUserName()));
 
             var clientesCriados = await _clienteService.AddRangeAsync(clientes);
 
@@ -118,7 +118,7 @@ namespace CRM.API.Controllers
                 return BadRequest(new { errors = errorMessages });
             }
 
-            cliente.UpdateDTO(User.FindFirst("name")?.Value ?? "Não identificado");
+            cliente.UpdateDTO(GetUserName());
 
             var result = await _clienteService.UpdateAsync(id, cliente);
 
@@ -133,7 +133,7 @@ namespace CRM.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            string usuarioAlteracao = User.FindFirst("name")?.Value ?? "Não identificado";
+            string usuarioAlteracao = GetUserName();
 
             var result = await _clienteService.RemoveAsync(id, usuarioAlteracao);
 
@@ -142,5 +142,8 @@ namespace CRM.API.Controllers
 
             return BadRequest(new { error = result.Error?.Description });
         }
+
+        private string GetUserName() => User.FindFirst("name")?.Value ?? "Não identificado";
+
     }
 }
